@@ -84,11 +84,12 @@ def calculate_productivity(profile: StrangpressprofilSchema, anlage: Extrusionsa
     validate_inputs(profile, anlage)
     optimale_bolzenlaenge = calculate_optimal_bolzenlaenge(profile, anlage)
     profgesch = calculate_profgesch(profile, anlage, oberflaechenfaktor, anwendungsfaktor)
+    anz_kundenlaengen_pro_runout = calculate_kundenlaengen_pro_runout(profile, anlage)
     profgesch_mm_s = profgesch * 1000 / 60  # Umrechnung von m/min in mm/s
     stempelgeschwindigkeit = profgesch_mm_s / calculate_verpressungsverhaeltnis(profile, anlage)
     verpressungszeit = optimale_bolzenlaenge / stempelgeschwindigkeit
     gesamtzeit = verpressungszeit + anlage.totzeit
-    gutmenge = (optimale_bolzenlaenge - profile.schrottlaenge) * profile.profilgewicht
-    produktivitaet = (gutmenge / gesamtzeit) * 3600  # Umrechnung in kg/h
+    gutmenge = ((anz_kundenlaengen_pro_runout * profile.kundenlaenge) - profile.schrottlaenge) * profile.profilgewicht # in gramm
+    produktivitaet = ((gutmenge / 1000)  / gesamtzeit) * 3600  # Umrechnung in kg/h
 
     return round(produktivitaet, 2)
