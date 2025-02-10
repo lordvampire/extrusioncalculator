@@ -26,14 +26,14 @@ def calculate_verpressungsverhaeltnis(profile: StrangpressprofilSchema, anlage: 
     container_radius = anlage.containerdurchmesser / 2
     container_area = math.pi * (container_radius ** 2)
     gewicht_container_m = container_area * 1000 * ALUMINIUM_DICHTE
-    verpressungsverhaeltnis = gewicht_container_m / profile.profilgewicht
+    verpressungsverhaeltnis = gewicht_container_m / profile.profilgewicht 
 
     return round(max(1.0, verpressungsverhaeltnis), 2)
 
 def calculate_max_theor_profgesch(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema) -> float:
     validate_inputs(profile, anlage)
     verpressungsverhaeltnis = calculate_verpressungsverhaeltnis(profile, anlage)
-    max_theor_profgesch_mm_s = anlage.max_stempelgeschwindigkeit / verpressungsverhaeltnis
+    max_theor_profgesch_mm_s = anlage.max_stempelgeschwindigkeit * verpressungsverhaeltnis
 
     return round(max(1.0, max_theor_profgesch_mm_s * 0.06), 2)
 
