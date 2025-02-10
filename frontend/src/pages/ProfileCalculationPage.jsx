@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { getOberflaechen, getAnwendungsbereiche } from '../services/api'; // Import der API-Funktionen
 
 const ProfileCalculationPage = () => {
   const [profileData, setProfileData] = useState({
@@ -21,13 +21,13 @@ const ProfileCalculationPage = () => {
 
   useEffect(() => {
     // Laden der Anwendungsbereiche
-    axios.get('http://localhost:8000/api/anwendungsbereiche')
-      .then(response => setAnwendungsbereiche(response.data))
+    getAnwendungsbereiche()
+      .then(setAnwendungsbereiche)
       .catch(error => console.error('Error fetching anwendungsbereiche:', error));
 
     // Laden der Oberflächenanforderungen
-    axios.get('http://localhost:8000/api/oberflaechenanforderungen')
-      .then(response => setOberflaechenanforderungen(response.data))
+    getOberflaechen()
+      .then(setOberflaechenanforderungen)
       .catch(error => console.error('Error fetching oberflaechenanforderungen:', error));
   }, []);
 
