@@ -90,7 +90,9 @@ def calculate(profile: StrangpressprofilSchema, db: Session = Depends(get_db)):
     anlagen = db.query(Extrusionsanlage).all()
     results = []
     for anlage in anlagen:
-        anlage_schema = ExtrusionsanlageSchema.from_orm(anlage)
+        anlage_dict = anlage.__dict__.copy()
+        anlage_dict['id'] = str(anlage_dict['id'])  # UUID zu String umwandeln
+        anlage_schema = ExtrusionsanlageSchema(**anlage_dict)
         result = {
             "verpressungsverhaeltnis": calculate_verpressungsverhaeltnis(profile, anlage_schema),
             "max_theor_profgesch": calculate_max_theor_profgesch(profile, anlage_schema),
