@@ -33,9 +33,9 @@ def calculate_verpressungsverhaeltnis(profile: StrangpressprofilSchema, anlage: 
 def calculate_max_theor_profgesch(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema) -> float:
     validate_inputs(profile, anlage)
     verpressungsverhaeltnis = calculate_verpressungsverhaeltnis(profile, anlage)
-    max_theor_profgesch_mm_s = anlage.max_stempelgeschwindigkeit * verpressungsverhaeltnis
+    max_theor_profgesch_mm_s = (anlage.max_stempelgeschwindigkeit / verpressungsverhaeltnis) * 60 / 1000  # Umrechnung von m/min in mm/s
 
-    return round(max(1.0, max_theor_profgesch_mm_s * 0.06), 2)
+    return round(max(1.0, max_theor_profgesch_mm_s), 2)
 
 def calculate_profgesch(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema,
                         oberflaechenfaktor: float, anwendungsfaktor: float) -> float:
