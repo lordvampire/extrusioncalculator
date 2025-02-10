@@ -40,7 +40,7 @@ const ProfileCalculationPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/api/calculate', profileData);
+      const response = await axios.post('http://3.68.80.95:8000/api/calculate', profileData);
       setResults(response.data);
     } catch (error) {
       console.error('Error calculating profile data:', error);
