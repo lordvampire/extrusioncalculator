@@ -18,7 +18,6 @@ from app.schemas import (
     ExtrusionsanlageSchema,
     StrangpressprofilSchema
 )
-from app.calculations import calculate_profgesch
 import uuid
 
 router = APIRouter()
@@ -85,25 +84,25 @@ def delete_anlage(anlage_id: uuid.UUID, db: Session = Depends(get_db)):
 
     return {"message": "Extrusionsanlage erfolgreich gelöscht", "id": str(anlage_id)}
 
-
-
-
 # Berechnungs-Endpunkt
-@router.get("/berechnung/pressgeschwindigkeit/{profile_id}/{anlage_id}")
-def get_pressgeschwindigkeit(
-    profile_id: uuid.UUID,
-    anlage_id: uuid.UUID,
-    db: Session = Depends(get_db)
-):
-    profile = db.query(Strangpressprofil).filter(Strangpressprofil.id == profile_id).first()
-    anlage = db.query(Extrusionsanlage).filter(Extrusionsanlage.id == anlage_id).first()
-
-    if not profile or not anlage:
-        raise HTTPException(status_code=404, detail="Profil oder Anlage nicht gefunden")
-
-    pressgeschwindigkeit = calculate_profgesch(profile, anlage)
-    return {"pressgeschwindigkeit_m_min": pressgeschwindigkeit}
-
+@router.post("/api/calculate")
+def calculate(profile: StrangpressprofilSchema, db: Session = Depends(get_db)):
+    anlagen = db.query(Extrusionsanlage).all()
+    results = []
+    for anlage in anlagen:
+        anlage_schema = ExtrusionsanlageSchema.from_orm(anlage)
+        result = {
+            "verpressungsverhaeltnis": calculate_verpressungsverhaeltnis(profile, anlage_schema),
+            "max_theor_profgesch": calculate_max_theor_profgesch(profile, anlage_schema),
+            "profgesch": calculate_profgesch(profile, anlage_schema, 1.0, 1.0),  # Beispielwerte für oberflaechenfaktor und anwendungsfaktor
+            "austrittsgewicht": calculate_austrittsgewicht(profile, anlage_schema),
+            "max_auszug": calculate_max_auszug(profile, anlage_schema),
+            "kundenlaengen_pro_runout": calculate_kundenlaengen_pro_runout(profile, anlage_schema),
+            "optimal_bolzenlaenge": calculate_optimal_bolzenlaenge(profile, anlage_schema),
+            "productivity": calculate_productivity(profile, anlage_schema, 1.0, 1.0)  # Beispielwerte für oberflaechenfaktor und anwendungsfaktor
+        }
+        results.append(result)
+    return results
 
 @router.post("/oberflaechen", response_model=OberflaechenanforderungSchema)
 def create_oberflaeche(oberflaeche: OberflaechenanforderungSchema, db: Session = Depends(get_db)):
@@ -121,7 +120,6 @@ def create_oberflaeche(oberflaeche: OberflaechenanforderungSchema, db: Session =
     new_oberflaeche.id = str(new_oberflaeche.id)
 
     return new_oberflaeche
-
 
 @router.get("/oberflaechen", response_model=list[OberflaechenanforderungSchema])
 def get_oberflaechen(db: Session = Depends(get_db)):
@@ -200,23 +198,3 @@ def delete_anwendungsbereich(anwendungsbereich_id: uuid.UUID, db: Session = Depe
     db.delete(db_anwendungsbereich)
     db.commit()
     return {"message": "Anwendungsbereich erfolgreich gelöscht"}
-
-
-
-@router.post("/api/calculate")
-def calculate(profile: StrangpressprofilSchema, db: Session = Depends(get_db)):
-    anlagen = db.query(Extrusionsanlage).all()
-    results = []
-    for anlage in anlagen:
-        result = {
-            "verpressungsverhaeltnis": calculate_verpressungsverhaeltnis(profile, anlage),
-            "max_theor_profgesch": calculate_max_theor_profgesch(profile, anlage),
-            "profgesch": calculate_profgesch(profile, anlage, 1.0, 1.0),  # Beispielwerte für oberflaechenfaktor und anwendungsfaktor
-            "austrittsgewicht": calculate_austrittsgewicht(profile, anlage),
-            "max_auszug": calculate_max_auszug(profile, anlage),
-            "kundenlaengen_pro_runout": calculate_kundenlaengen_pro_runout(profile, anlage),
-            "optimal_bolzenlaenge": calculate_optimal_bolzenlaenge(profile, anlage),
-            "productivity": calculate_productivity(profile, anlage, 1.0, 1.0)  # Beispielwerte für oberflaechenfaktor und anwendungsfaktor
-        }
-        results.append(result)
-    return results

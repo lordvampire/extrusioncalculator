@@ -73,9 +73,9 @@ def calculate_optimal_bolzenlaenge(profile: StrangpressprofilSchema, anlage: Ext
     validate_inputs(profile, anlage)
     verpressungsverhaeltnis = calculate_verpressungsverhaeltnis(profile, anlage)
     max_auszug = min(calculate_max_auszug(profile, anlage), anlage.max_auszugslaenge)
-    effektive_auszug = max_auszug - anlage.schrottlaenge
+    effektive_auszug = max_auszug - profile.schrottlaenge
     kundenlaengen_pro_runout = math.floor(effektive_auszug / profile.kundenlaenge)
-    optimale_bolzenlaenge = (kundenlaengen_pro_runout * profile.kundenlaenge + anlage.schrottlaenge) / verpressungsverhaeltnis
+    optimale_bolzenlaenge = (kundenlaengen_pro_runout * profile.kundenlaenge + profile.schrottlaenge) / verpressungsverhaeltnis
 
     return round(optimale_bolzenlaenge, 2)
 

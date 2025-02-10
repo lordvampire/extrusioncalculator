@@ -33,8 +33,8 @@ class ExtrusionsanlageSchema(BaseModel):
     max_strangzahl: int
     rampenverlust: float
 
-class Config:
-    from_attributes = True
+    class Config:
+        from_attributes = True
 
 class StrangpressprofilSchema(BaseModel):
     profilbreite: float
@@ -48,5 +48,5 @@ class StrangpressprofilSchema(BaseModel):
     anwendungsbereich_id: Optional[UUID]
     oberflaechenanforderung_id: Optional[UUID]
 
-class Config:
-    from_attributes = True
+    class Config:
+        from_attributes = True
