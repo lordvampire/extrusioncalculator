@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from uuid import UUID
 
 class OberflaechenanforderungSchema(BaseModel):
     id: Optional[str] = None
@@ -32,20 +33,20 @@ class ExtrusionsanlageSchema(BaseModel):
     max_strangzahl: int
     rampenverlust: float
 
-    class Config:
-        from_attributes = True
+class Config:
+    from_attributes = True
 
 class StrangpressprofilSchema(BaseModel):
-    id: Optional[str] = None
     profilbreite: float
     profilhoehe: float
     profilgewicht: float
     profiltyp: str
     profilkomplexitaet: int
-    zugfestigkeit: float
+    strangzahl: int
+    schrottlaenge: float
     kundenlaenge: float
-    anwendungsbereich_id: str
-    oberflaechenanforderung_id: str
+    anwendungsbereich_id: Optional[UUID]
+    oberflaechenanforderung_id: Optional[UUID]
 
-    class Config:
-        from_attributes = True
+class Config:
+    from_attributes = True

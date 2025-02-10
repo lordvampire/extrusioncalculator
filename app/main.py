@@ -15,7 +15,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Oberflaechenanforderung, Anwendungsbereich, Extrusionsanlage, Strangpressprofil
@@ -23,11 +22,6 @@ from app.schemas import OberflaechenanforderungSchema, AnwendungsbereichSchema, 
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
-
-
-
-
-
 
 # Include routes
 from app.routes import router

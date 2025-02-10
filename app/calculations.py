@@ -33,7 +33,7 @@ def calculate_verpressungsverhaeltnis(profile: Strangpressprofil, anlage: Extrus
 def calculate_max_theor_profgesch(profile: Strangpressprofil, anlage: Extrusionsanlage) -> float:
     validate_inputs(profile, anlage)
     verpressungsverhaeltnis = calculate_verpressungsverhaeltnis(profile, anlage)
-    max_theor_profgesch_mm_s = anlage.max_stempelgeschwindigkeit * verpressungsverhaeltnis
+    max_theor_profgesch_mm_s = anlage.max_stempelgeschwindigkeit / verpressungsverhaeltnis
 
     return round(max(1.0, max_theor_profgesch_mm_s * 0.06), 2)
 
@@ -75,7 +75,7 @@ def calculate_optimal_bolzenlaenge(profile: Strangpressprofil, anlage: Extrusion
     max_auszug = min(calculate_max_auszug(profile, anlage), anlage.max_auszugslaenge)
     effektive_auszug = max_auszug - anlage.schrottlaenge
     kundenlaengen_pro_runout = math.floor(effektive_auszug / profile.kundenlaenge)
-    optimale_bolzenlaenge = (kundenlaengen_pro_runout * profile.kundenlaenge + profile.schrottlaenge) / verpressungsverhaeltnis
+    optimale_bolzenlaenge = (kundenlaengen_pro_runout * profile.kundenlaenge + anlage.schrottlaenge) / verpressungsverhaeltnis
 
     return round(optimale_bolzenlaenge, 2)
 
@@ -92,5 +92,3 @@ def calculate_productivity(profile: Strangpressprofil, anlage: Extrusionsanlage,
     produktivitaet = (gutmenge / gesamtzeit) * 3600  # Umrechnung in kg/h
 
     return round(produktivitaet, 2)
-
-

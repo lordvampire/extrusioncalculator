@@ -2,6 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Oberflaechenanforderung, Anwendungsbereich, Extrusionsanlage, Strangpressprofil
+from app.calculations import (
+    calculate_verpressungsverhaeltnis,
+    calculate_max_theor_profgesch,
+    calculate_profgesch,
+    calculate_austrittsgewicht,
+    calculate_max_auszug,
+    calculate_kundenlaengen_pro_runout,
+    calculate_optimal_bolzenlaenge,
+    calculate_productivity
+)
 from app.schemas import (
     OberflaechenanforderungSchema,
     AnwendungsbereichSchema,
@@ -190,3 +200,23 @@ def delete_anwendungsbereich(anwendungsbereich_id: uuid.UUID, db: Session = Depe
     db.delete(db_anwendungsbereich)
     db.commit()
     return {"message": "Anwendungsbereich erfolgreich gelöscht"}
+
+
+
+@router.post("/api/calculate")
+def calculate(profile: StrangpressprofilSchema, db: Session = Depends(get_db)):
+    anlagen = db.query(Extrusionsanlage).all()
+    results = []
+    for anlage in anlagen:
+        result = {
+            "verpressungsverhaeltnis": calculate_verpressungsverhaeltnis(profile, anlage),
+            "max_theor_profgesch": calculate_max_theor_profgesch(profile, anlage),
+            "profgesch": calculate_profgesch(profile, anlage, 1.0, 1.0),  # Beispielwerte für oberflaechenfaktor und anwendungsfaktor
+            "austrittsgewicht": calculate_austrittsgewicht(profile, anlage),
+            "max_auszug": calculate_max_auszug(profile, anlage),
+            "kundenlaengen_pro_runout": calculate_kundenlaengen_pro_runout(profile, anlage),
+            "optimal_bolzenlaenge": calculate_optimal_bolzenlaenge(profile, anlage),
+            "productivity": calculate_productivity(profile, anlage, 1.0, 1.0)  # Beispielwerte für oberflaechenfaktor und anwendungsfaktor
+        }
+        results.append(result)
+    return results
