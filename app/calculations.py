@@ -1,12 +1,12 @@
 import math
-from app.models import Strangpressprofil, Extrusionsanlage
+from app.schemas import StrangpressprofilSchema, ExtrusionsanlageSchema
 
 ALUMINIUM_DICHTE = 0.0027  # g/mm³
 
-def validate_inputs(profile: Strangpressprofil, anlage: Extrusionsanlage):
-    if not isinstance(profile, Strangpressprofil):
+def validate_inputs(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema):
+    if not isinstance(profile, StrangpressprofilSchema):
         raise ValueError("Invalid profile instance")
-    if not isinstance(anlage, Extrusionsanlage):
+    if not isinstance(anlage, ExtrusionsanlageSchema):
         raise ValueError("Invalid anlage instance")
     if profile.profilgewicht <= 0:
         raise ValueError("Invalid profile weight")
@@ -21,7 +21,7 @@ def validate_inputs(profile: Strangpressprofil, anlage: Extrusionsanlage):
     if not (0 <= anlage.rampenverlust <= 100):
         raise ValueError("Invalid rampenverlust")
 
-def calculate_verpressungsverhaeltnis(profile: Strangpressprofil, anlage: Extrusionsanlage) -> float:
+def calculate_verpressungsverhaeltnis(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema) -> float:
     validate_inputs(profile, anlage)
     container_radius = anlage.containerdurchmesser / 2
     container_area = math.pi * (container_radius ** 2)
@@ -30,14 +30,14 @@ def calculate_verpressungsverhaeltnis(profile: Strangpressprofil, anlage: Extrus
 
     return round(max(1.0, verpressungsverhaeltnis), 2)
 
-def calculate_max_theor_profgesch(profile: Strangpressprofil, anlage: Extrusionsanlage) -> float:
+def calculate_max_theor_profgesch(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema) -> float:
     validate_inputs(profile, anlage)
     verpressungsverhaeltnis = calculate_verpressungsverhaeltnis(profile, anlage)
     max_theor_profgesch_mm_s = anlage.max_stempelgeschwindigkeit / verpressungsverhaeltnis
 
     return round(max(1.0, max_theor_profgesch_mm_s * 0.06), 2)
 
-def calculate_profgesch(profile: Strangpressprofil, anlage: Extrusionsanlage,
+def calculate_profgesch(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema,
                         oberflaechenfaktor: float, anwendungsfaktor: float) -> float:
     validate_inputs(profile, anlage)
     max_theor_profgesch = calculate_max_theor_profgesch(profile, anlage)
@@ -48,20 +48,20 @@ def calculate_profgesch(profile: Strangpressprofil, anlage: Extrusionsanlage,
 
     return round(max(1.0, profgesch), 2)
 
-def calculate_austrittsgewicht(profile: Strangpressprofil, anlage: Extrusionsanlage) -> float:
+def calculate_austrittsgewicht(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema) -> float:
     validate_inputs(profile, anlage)
     austrittsgewicht = profile.profilgewicht * profile.strangzahl
 
     return round(austrittsgewicht, 2)
 
-def calculate_max_auszug(profile: Strangpressprofil, anlage: Extrusionsanlage) -> float:
+def calculate_max_auszug(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema) -> float:
     validate_inputs(profile, anlage)
     verpressungsverhaeltnis = calculate_verpressungsverhaeltnis(profile, anlage)
     max_auszug = anlage.max_bolzenlaenge * verpressungsverhaeltnis
 
     return round(max_auszug, 2)
 
-def calculate_kundenlaengen_pro_runout(profile: Strangpressprofil, anlage: Extrusionsanlage) -> int:
+def calculate_kundenlaengen_pro_runout(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema) -> int:
     validate_inputs(profile, anlage)
     max_auszug = calculate_max_auszug(profile, anlage)
     effektive_auszug = min(max_auszug, anlage.max_auszugslaenge) - profile.schrottlaenge
@@ -69,7 +69,7 @@ def calculate_kundenlaengen_pro_runout(profile: Strangpressprofil, anlage: Extru
 
     return math.floor(kundenlaengen_pro_runout)
 
-def calculate_optimal_bolzenlaenge(profile: Strangpressprofil, anlage: Extrusionsanlage) -> float:
+def calculate_optimal_bolzenlaenge(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema) -> float:
     validate_inputs(profile, anlage)
     verpressungsverhaeltnis = calculate_verpressungsverhaeltnis(profile, anlage)
     max_auszug = min(calculate_max_auszug(profile, anlage), anlage.max_auszugslaenge)
@@ -79,7 +79,7 @@ def calculate_optimal_bolzenlaenge(profile: Strangpressprofil, anlage: Extrusion
 
     return round(optimale_bolzenlaenge, 2)
 
-def calculate_productivity(profile: Strangpressprofil, anlage: Extrusionsanlage,
+def calculate_productivity(profile: StrangpressprofilSchema, anlage: ExtrusionsanlageSchema,
                            oberflaechenfaktor: float, anwendungsfaktor: float) -> float:
     validate_inputs(profile, anlage)
     optimale_bolzenlaenge = calculate_optimal_bolzenlaenge(profile, anlage)
