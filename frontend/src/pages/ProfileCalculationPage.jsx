@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import von axios
 import { getOberflaechen, getAnwendungsbereiche } from '../services/api'; // Import der API-Funktionen
 
 const ProfileCalculationPage = () => {
