@@ -41,6 +41,8 @@ class Strangpressprofil(Base):
     profiltyp = Column(String, nullable=False)
     profilkomplexitaet = Column(Integer, nullable=False)
     zugfestigkeit = Column(Float, nullable=False)
+    strangzahl = Column(Integer, nullable=False)  # Neue Spalte hinzugefügt
+    schrottlaenge = Column(Integer, nullable=False)
     kundenlaenge = Column(Float, nullable=False)
     anwendungsbereich_id = Column(UUID(as_uuid=True), ForeignKey("anwendungsbereiche.id"))
     oberflaechenanforderung_id = Column(UUID(as_uuid=True), ForeignKey("oberflaechenanforderungen.id"))
