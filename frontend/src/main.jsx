@@ -3,7 +3,8 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Anlagen from "./pages/Anlagen.jsx";
 import Profile from "./pages/Profile.jsx";
-import OberflaechenUndAnwendungen from "./pages/OberflaechenUndAnwendungen.jsx"; // ✅ Richtiger Import
+import OberflaechenUndAnwendungen from "./pages/OberflaechenUndAnwendungen.jsx";
+import ProfileCalculationPage from "./pages/ProfileCalculationPage.jsx"; // Import der neuen Seite
 
 const Home = () => (
   <div>
